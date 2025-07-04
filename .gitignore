@@ -6,3 +6,6 @@ src/build
 .ipynb_checkpoints/
 build/
 .cache/
+CLAUDE.md
+.clangd
+POINTCLOUD_CONVERTER_PLAN.md

@@ -8,7 +8,7 @@ set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if (NOT DEFINED PBRT_SOURCE_CODE)
-  set (PBRT_SOURCE_CODE ${CMAKE_SOURCE_DIR})
+    set (PBRT_SOURCE_CODE ${CMAKE_SOURCE_DIR})
 endif ()
 
 # For sanitizers
@@ -28,39 +28,39 @@ set (PBRT_GPU_SHADER_MODEL "" CACHE STRING "")
 
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-  message (STATUS "Setting build type to 'Release' as none was specified.")
-  set (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
-  set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
+    message (STATUS "Setting build type to 'Release' as none was specified.")
+    set (CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+    set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release"
     "MinSizeRel" "RelWithDebInfo")
 endif ()
 
 function (CHECK_EXT NAME DIR HASH)
-  if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/${DIR}")
-    message (FATAL_ERROR "The ${NAME} submodule directory is missing! "
+    if (NOT IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/${DIR}")
+        message (FATAL_ERROR "The ${NAME} submodule directory is missing! "
       "Either that submodule was recently added to pbrt or you did not clone the project with --recursive. "
       "In order to update the submodules, run:\n"
       "  \"git submodule update --init --recursive\"")
-  endif ()
+    endif ()
 
-  find_package(Git)
-  if (GIT_FOUND)
-    execute_process (
+    find_package(Git)
+    if (GIT_FOUND)
+        execute_process (
       COMMAND ${GIT_EXECUTABLE} rev-parse HEAD
       WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/src/ext/${DIR}"
       RESULT_VARIABLE "git_return"
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE
       OUTPUT_VARIABLE "git_hash")
-    if (NOT ${git_hash} MATCHES "^${HASH}")
-      message (FATAL_ERROR "The ${CMAKE_CURRENT_SOURCE_DIR}/src/ext/${DIR} "
+        if (NOT ${git_hash} MATCHES "^${HASH}")
+            message (FATAL_ERROR "The ${CMAKE_CURRENT_SOURCE_DIR}/src/ext/${DIR} "
         "submodule isn't up to date (${git_hash} vs ${HASH}). Please run:\n"
         "  \"git submodule update --recursive\"")
-    else ()
-      message (STATUS "${NAME} at commit: ${git_hash}")
-    endif()
-  else (GIT_FOUND)
-    message (STATUS "git not found: unable to verify revisions in submodules")
-  endif (GIT_FOUND)
+        else ()
+            message (STATUS "${NAME} at commit: ${git_hash}")
+        endif()
+    else (GIT_FOUND)
+        message (STATUS "git not found: unable to verify revisions in submodules")
+    endif (GIT_FOUND)
 endfunction ()
 
 check_ext ("OpenEXR" "openexr/src" f723c3940fff287c0a26b425b90a8e764823bfd4)
@@ -87,15 +87,15 @@ find_package(OpenGL REQUIRED)
 set_property (GLOBAL PROPERTY USE_FOLDERS ON)
 
 if (MSVC)
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_CRT_SECURE_NO_WARNINGS")
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_ENABLE_EXTENDED_ALIGNED_STORAGE")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_CRT_SECURE_NO_WARNINGS")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_MSVC" "_ENABLE_EXTENDED_ALIGNED_STORAGE")
 endif ()
 
 if (PBRT_FLOAT_AS_DOUBLE)
-  list (APPEND PBRT_DEFINITIONS "PBRT_FLOAT_AS_DOUBLE")
+    list (APPEND PBRT_DEFINITIONS "PBRT_FLOAT_AS_DOUBLE")
 endif ()
 if (PBRT_DBG_LOGGING)
-  list (APPEND PBRT_DEFINITIONS "PBRT_DBG_LOGGING")
+    list (APPEND PBRT_DEFINITIONS "PBRT_DBG_LOGGING")
 endif ()
 
 #######################################
@@ -108,11 +108,11 @@ add_subdirectory (${CMAKE_CURRENT_SOURCE_DIR}/src/ext)
 find_package(OpenEXR 3.1.1)
 
 if (OPENEXR_FOUND)
-  message (STATUS "Found OpenEXR version ${OPENEXR_VERSION}")
+    message (STATUS "Found OpenEXR version ${OPENEXR_VERSION}")
 else ()
-  message (STATUS "OpenEXR not found; building it from scratch.")
-  add_subdirectory (src/ext/openexr)
-  set_property (TARGET IlmThread Iex OpenEXR
+    message (STATUS "OpenEXR not found; building it from scratch.")
+    add_subdirectory (src/ext/openexr)
+    set_property (TARGET IlmThread Iex OpenEXR
                 PROPERTY FOLDER "ext/OpenEXR")
 endif ()
 
@@ -120,31 +120,31 @@ endif ()
 # os/compiler-specific stuff
 
 if (CMAKE_SYSTEM_NAME STREQUAL Windows)
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_WINDOWS" "NOMINMAX")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_WINDOWS" "NOMINMAX")
 elseif (CMAKE_SYSTEM_NAME STREQUAL Darwin)
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_OSX")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_OSX")
 elseif (CMAKE_SYSTEM_NAME STREQUAL Linux)
-  list (APPEND PBRT_DEFINITIONS "PBRT_IS_LINUX")
-  # -rdynamic so we can get backtrace symbols...
-  # --no-as-needed so libprofiler sticks around
-  string (APPEND CMAKE_EXE_LINKER_FLAGS " -rdynamic -Wl,--no-as-needed")
+    list (APPEND PBRT_DEFINITIONS "PBRT_IS_LINUX")
+    # -rdynamic so we can get backtrace symbols...
+    # --no-as-needed so libprofiler sticks around
+    string (APPEND CMAKE_EXE_LINKER_FLAGS " -rdynamic -Wl,--no-as-needed")
 else ()
-  message (SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
+    message (SEND_ERROR "Unknown system name: " + CMAKE_SYSTEM_NAME)
 endif()
 if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
-  add_definitions(-Wno-deprecated-declarations) # silent deprecated 'snprintf' message under MacOS arm64
+    add_definitions(-Wno-deprecated-declarations) # silent deprecated 'snprintf' message under MacOS arm64
 endif()
 # libgoogle-perftools-dev
 find_library (PROFILE_LIB profiler)
 if (NOT PROFILE_LIB)
-  message (STATUS "Unable to find -lprofiler")
+    message (STATUS "Unable to find -lprofiler")
 else ()
-  message (STATUS "Found -lprofiler: ${PROFILE_LIB}")
+    message (STATUS "Found -lprofiler: ${PROFILE_LIB}")
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION GREATER_EQUAL 14)
-  message (STATUS "Disabling -ffp-contract (thanks, clang 14!)")
-  list (APPEND PBRT_CXX_FLAGS "-ffp-contract=off")
+    message (STATUS "Disabling -ffp-contract (thanks, clang 14!)")
+    list (APPEND PBRT_CXX_FLAGS "-ffp-contract=off")
 endif ()
 
 add_library (pbrt_warnings INTERFACE)
@@ -175,56 +175,56 @@ include (CheckLanguage)
 check_language(CUDA)
 
 if (CMAKE_CUDA_COMPILER)
-  if (CUDA_VERSION_MAJOR LESS 11)
-    message (WARNING "pbrt-v4 requires CUDA version 11.0 or later but version ${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\
+    if (CUDA_VERSION_MAJOR LESS 11)
+        message (WARNING "pbrt-v4 requires CUDA version 11.0 or later but version ${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\
 was found. GPU support is therefore disabled. If you have multiple versions\
 of CUDA installed, please update your PATH.")
-  else ()
-    find_package (CUDA REQUIRED)
+    else ()
+        find_package (CUDA REQUIRED)
 
-    # This seems to be necessary starting with 3.17.1, but gives an error
-    # about 17 being an unsupported version earlier...
-    if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
-        set (CMAKE_CUDA_STANDARD 17)
-    endif ()
+        # This seems to be necessary starting with 3.17.1, but gives an error
+        # about 17 being an unsupported version earlier...
+        if (${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.17.0")
+            set (CMAKE_CUDA_STANDARD 17)
+        endif ()
 
-    # https://github.com/VIAME/VIAME/blob/aa6c5f56a898b08e4da102c400b453e23952199c/CMakeLists.txt#L291
-    if (NOT CUDA_VERSION_PATCH)
-      if (CUDA_NVCC_EXECUTABLE AND
+        # https://github.com/VIAME/VIAME/blob/aa6c5f56a898b08e4da102c400b453e23952199c/CMakeLists.txt#L291
+        if (NOT CUDA_VERSION_PATCH)
+            if (CUDA_NVCC_EXECUTABLE AND
           CUDA_NVCC_EXECUTABLE STREQUAL CMAKE_CUDA_COMPILER AND
           CMAKE_CUDA_COMPILER_VERSION MATCHES [=[([0-9]+)\.([0-9]+)\.([0-9]+)]=])
-        set (CUDA_VERSION_PATCH "${CMAKE_MATCH_3}")
-      elseif (CUDA_NVCC_EXECUTABLE)
-        execute_process (COMMAND ${CUDA_NVCC_EXECUTABLE} "--version" OUTPUT_VARIABLE NOUT)
-        if (NOUT MATCHES [=[ V([0-9]+)\.([0-9]+)\.([0-9]+)]=])
-          set (CUDA_VERSION_PATCH "${CMAKE_MATCH_3}")
+                set (CUDA_VERSION_PATCH "${CMAKE_MATCH_3}")
+            elseif (CUDA_NVCC_EXECUTABLE)
+                execute_process (COMMAND ${CUDA_NVCC_EXECUTABLE} "--version" OUTPUT_VARIABLE NOUT)
+                if (NOUT MATCHES [=[ V([0-9]+)\.([0-9]+)\.([0-9]+)]=])
+                    set (CUDA_VERSION_PATCH "${CMAKE_MATCH_3}")
+                endif ()
+            endif ()
         endif ()
-      endif ()
-    endif ()
 
-    message (STATUS "Found CUDA: ${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}.${CUDA_VERSION_PATCH}")
-    if (CUDA_VERSION_MAJOR EQUAL 11 AND CUDA_VERSION_MINOR EQUAL 3 AND CUDA_VERSION_PATCH LESS 109)
-      message (SEND_ERROR "Unfortunately, pbrt-v4 triggers an internal compiler error in CUDA 11.3.0. Please either use CUDA 11.0-11.2 or 11.3.1 or later.")
-    endif ()
-
-    if ("${PBRT_OPTIX7_PATH}" STREQUAL "")
-        message (WARNING "Found CUDA but PBRT_OPTIX7_PATH is not set. Disabling GPU compilation.")
-    else ()
-        enable_language (CUDA)
-        list (APPEND PBRT_DEFINITIONS "PBRT_BUILD_GPU_RENDERER")
-        if (PBRT_NVTX)
-            list (APPEND PBRT_DEFINITIONS "NVTX")
+        message (STATUS "Found CUDA: ${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}.${CUDA_VERSION_PATCH}")
+        if (CUDA_VERSION_MAJOR EQUAL 11 AND CUDA_VERSION_MINOR EQUAL 3 AND CUDA_VERSION_PATCH LESS 109)
+            message (SEND_ERROR "Unfortunately, pbrt-v4 triggers an internal compiler error in CUDA 11.3.0. Please either use CUDA 11.0-11.2 or 11.3.1 or later.")
         endif ()
-        if (PBRT_NVML)
-            list (APPEND PBRT_DEFINITIONS "PBRT_USE_NVML")
-        endif ()
-        set (PBRT_CUDA_ENABLED ON)
 
-        # FIXME
-        include_directories (${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})  # for regular c++ compiles
+        if ("${PBRT_OPTIX7_PATH}" STREQUAL "")
+            message (WARNING "Found CUDA but PBRT_OPTIX7_PATH is not set. Disabling GPU compilation.")
+        else ()
+            enable_language (CUDA)
+            list (APPEND PBRT_DEFINITIONS "PBRT_BUILD_GPU_RENDERER")
+            if (PBRT_NVTX)
+                list (APPEND PBRT_DEFINITIONS "NVTX")
+            endif ()
+            if (PBRT_NVML)
+                list (APPEND PBRT_DEFINITIONS "PBRT_USE_NVML")
+            endif ()
+            set (PBRT_CUDA_ENABLED ON)
 
-        # http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
-        target_compile_options (
+            # FIXME
+            include_directories (${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})  # for regular c++ compiles
+
+            # http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
+            target_compile_options (
             pbrt_warnings
             INTERFACE
                 #"$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xptxas --warn-on-double-precision-use>"
@@ -236,10 +236,10 @@ of CUDA installed, please update your PATH.")
                 "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-Xcudafe --diag_suppress=implicit_return_from_non_void_function>"
         )
 
-        # Willie hears yeh..
-        string (APPEND CMAKE_CUDA_FLAGS " -Xnvlink -suppress-stack-size-warning")
+            # Willie hears yeh..
+            string (APPEND CMAKE_CUDA_FLAGS " -Xnvlink -suppress-stack-size-warning")
 
-        target_compile_options (
+            target_compile_options (
             cuda_build_configuration
             INTERFACE
                 "$<$<COMPILE_LANGUAGE:CUDA>:--std=c++17;--use_fast_math;--expt-relaxed-constexpr;--extended-lambda;--forward-unknown-to-host-compiler>"
@@ -247,109 +247,109 @@ of CUDA installed, please update your PATH.")
                 "$<$<COMPILE_LANGUAGE:CUDA>:$<IF:$<AND:$<CONFIG:Debug>,$<NOT:$<BOOL:$<TARGET_PROPERTY:CUDA_PTX_COMPILATION>>>>,-G;-g,-lineinfo;-maxrregcount;128>>"
         )
 
-        if (PBRT_GPU_SHADER_MODEL STREQUAL "")
-            # https://wagonhelm.github.io/articles/2018-03/detecting-cuda-capability-with-cmake
-            # Get CUDA compute capability
-            set (CHECK_CUDA_OUTPUT_EXE ${CMAKE_BINARY_DIR}/checkcuda)
-            if (MSVC)
-                execute_process (COMMAND ${CMAKE_CUDA_COMPILER} -lcuda ${PBRT_SOURCE_CODE}/cmake/checkcuda.cu -ccbin ${CMAKE_CXX_COMPILER} -o ${CHECK_CUDA_OUTPUT_EXE}
+            if (PBRT_GPU_SHADER_MODEL STREQUAL "")
+                # https://wagonhelm.github.io/articles/2018-03/detecting-cuda-capability-with-cmake
+                # Get CUDA compute capability
+                set (CHECK_CUDA_OUTPUT_EXE ${CMAKE_BINARY_DIR}/checkcuda)
+                if (MSVC)
+                    execute_process (COMMAND ${CMAKE_CUDA_COMPILER} -lcuda ${PBRT_SOURCE_CODE}/cmake/checkcuda.cu -ccbin ${CMAKE_CXX_COMPILER} -o ${CHECK_CUDA_OUTPUT_EXE}
                                  RESULT_VARIABLE BUILD_CHECK_CUDA_RETURN_CODE)
-            else  ()
-                execute_process (COMMAND ${CMAKE_CUDA_COMPILER} -lcuda ${PBRT_SOURCE_CODE}/cmake/checkcuda.cu -o ${CHECK_CUDA_OUTPUT_EXE}
+                else  ()
+                    execute_process (COMMAND ${CMAKE_CUDA_COMPILER} -lcuda ${PBRT_SOURCE_CODE}/cmake/checkcuda.cu -o ${CHECK_CUDA_OUTPUT_EXE}
                                  RESULT_VARIABLE BUILD_CHECK_CUDA_RETURN_CODE)
-            endif ()
+                endif ()
 
-            if (NOT ${BUILD_CHECK_CUDA_RETURN_CODE} EQUAL 0)
-                message (SEND_ERROR "Was unable to build checkcuda, consider manually setting PBRT_GPU_SHADER_MODEL")
-            endif ()
+                if (NOT ${BUILD_CHECK_CUDA_RETURN_CODE} EQUAL 0)
+                    message (SEND_ERROR "Was unable to build checkcuda, consider manually setting PBRT_GPU_SHADER_MODEL")
+                endif ()
 
-            execute_process (COMMAND ${CHECK_CUDA_OUTPUT_EXE}
+                execute_process (COMMAND ${CHECK_CUDA_OUTPUT_EXE}
                              RESULT_VARIABLE CUDA_RETURN_CODE
                              OUTPUT_VARIABLE CHECK_CUDA_OUTPUT)
 
-            if (NOT ${CUDA_RETURN_CODE} EQUAL 0)
-                message (SEND_ERROR ${CHECK_CUDA_OUTPUT})
-              else ()
-                set(ARCH "${CHECK_CUDA_OUTPUT}")
-                message (STATUS "Detected CUDA Architecture: ${ARCH}")
+                if (NOT ${CUDA_RETURN_CODE} EQUAL 0)
+                    message (SEND_ERROR ${CHECK_CUDA_OUTPUT})
+                else ()
+                    set(ARCH "${CHECK_CUDA_OUTPUT}")
+                    message (STATUS "Detected CUDA Architecture: ${ARCH}")
+                    string (APPEND CMAKE_CUDA_FLAGS " --gpu-architecture=${ARCH}")
+                endif ()
+            else ()
+                set(ARCH "${PBRT_GPU_SHADER_MODEL}")
+                message (STATUS "Specified CUDA Architecture: ${ARCH}")
                 string (APPEND CMAKE_CUDA_FLAGS " --gpu-architecture=${ARCH}")
             endif ()
-        else ()
-            set(ARCH "${PBRT_GPU_SHADER_MODEL}")
-            message (STATUS "Specified CUDA Architecture: ${ARCH}")
-            string (APPEND CMAKE_CUDA_FLAGS " --gpu-architecture=${ARCH}")
-        endif ()
 
-        set (PBRT_CUDA_LIB cuda)
-        # optix
-        # FIXME
-        include_directories (${PBRT_OPTIX7_PATH}/include)
+            set (PBRT_CUDA_LIB cuda)
+            # optix
+            # FIXME
+            include_directories (${PBRT_OPTIX7_PATH}/include)
 
-        # find CUDA's bin2c executable
-        get_filename_component (cuda_compiler_bin "${CMAKE_CUDA_COMPILER}" DIRECTORY)
-        find_program (BIN2C
+            # find CUDA's bin2c executable
+            get_filename_component (cuda_compiler_bin "${CMAKE_CUDA_COMPILER}" DIRECTORY)
+            find_program (BIN2C
                       NAMES bin2c
                       PATHS ${cuda_compiler_bin}
                       DOC "Path to the CUDA SDK bin2c executable."
                       NO_DEFAULT_PATH)
-        if (NOT BIN2C)
-            message (FATAL_ERROR
+            if (NOT BIN2C)
+                message (FATAL_ERROR
                      "bin2c not found:\n"
                      "  CMAKE_CUDA_COMPILER='${CMAKE_CUDA_COMPILER}'\n"
                      "  cuda_compiler_bin='${cuda_compiler_bin}'\n"
             )
-        endif ()
-
-        # this macro defines cmake rules that execute the following four steps:
-        # 1) compile the given cuda file ${cuda_file} to an intermediary PTX file
-        # 2) use the 'bin2c' tool (that comes with CUDA) to
-        #    create a second intermediary (.c-)file which defines a const string variable
-        #    (named '${c_var_name}') whose (constant) value is the PTX output
-        #    from the previous step.
-        # 3) compile the given .c file to an intermediary object file (why thus has
-        #    that PTX string 'embedded' as a global constant.
-        # 4) assign the name of the intermediary .o file to the cmake variable
-        #    'output_var', which can then be added to cmake targets.
-        macro (cuda_compile_and_embed output_var cuda_file lib_name)
-          add_library ("${lib_name}" OBJECT "${cuda_file}")
-          set_property (TARGET "${lib_name}" PROPERTY CUDA_PTX_COMPILATION ON)
-
-          # disable "extern declaration... is treated as a static definition" warning
-          if (CUDA_VERSION_MAJOR EQUAL 11 AND CUDA_VERSION_MINOR LESS 2)
-              target_compile_options ("${lib_name}" PRIVATE
-                                      -Xcudafe=--display_error_number -Xcudafe=--diag_suppress=3089)
-          else ()
-              target_compile_options ("${lib_name}" PRIVATE
-                                      -Xcudafe=--display_error_number -Xcudafe=--diag_suppress=20044)
-          endif ()
-
-          # CUDA integration in Visual Studio seems broken as even if "Use
-          # Host Preprocessor Definitions" is checked, the host preprocessor
-          # definitions are still not used when compiling device code.
-          # To work around that, define the macros using --define-macro to
-          # avoid CMake identifying those as macros and using the proper (but
-          # broken) way of specifying them.
-          if (${CMAKE_GENERATOR} MATCHES "^Visual Studio")
-            # As PBRT_DEBUG_BUILD is specified globally as a definition, we need to
-            # manually add it due to the bug mentioned earlier and due to it
-            # not being found in PBRT_DEFINITIONS.
-            if (CMAKE_BUILD_TYPE MATCHES Debug)
-                set (cuda_definitions "--define-macro=PBRT_DEBUG_BUILD")
             endif ()
-            foreach (arg ${PBRT_DEFINITIONS})
-              list (APPEND cuda_definitions "--define-macro=${arg}")
-            endforeach ()
-            target_compile_options ("${lib_name}" PRIVATE ${cuda_definitions})
-          else ()
-            target_compile_definitions ("${lib_name}" PRIVATE ${PBRT_DEFINITIONS})
-          endif ()
-          target_include_directories ("${lib_name}" PRIVATE src ${CMAKE_BINARY_DIR})
-          target_include_directories ("${lib_name}" SYSTEM PRIVATE ${NANOVDB_INCLUDE})
-          target_link_libraries ("${lib_name}" PRIVATE cuda_build_configuration pbrt_opt pbrt_warnings)
-          add_dependencies ("${lib_name}" pbrt_soa_generated)
-          set (c_var_name ${output_var})
-          set (embedded_file ${cuda_file}.ptx_embedded.c)
-          add_custom_command (
+
+            # this macro defines cmake rules that execute the following four steps:
+            # 1) compile the given cuda file ${cuda_file} to an intermediary PTX file
+            # 2) use the 'bin2c' tool (that comes with CUDA) to
+            #    create a second intermediary (.c-)file which defines a const string variable
+            #    (named '${c_var_name}') whose (constant) value is the PTX output
+            #    from the previous step.
+            # 3) compile the given .c file to an intermediary object file (why thus has
+            #    that PTX string 'embedded' as a global constant.
+            # 4) assign the name of the intermediary .o file to the cmake variable
+            #    'output_var', which can then be added to cmake targets.
+            macro (cuda_compile_and_embed output_var cuda_file lib_name)
+                add_library ("${lib_name}" OBJECT "${cuda_file}")
+                set_property (TARGET "${lib_name}" PROPERTY CUDA_PTX_COMPILATION ON)
+
+                # disable "extern declaration... is treated as a static definition" warning
+                if (CUDA_VERSION_MAJOR EQUAL 11 AND CUDA_VERSION_MINOR LESS 2)
+                    target_compile_options ("${lib_name}" PRIVATE
+                                      -Xcudafe=--display_error_number -Xcudafe=--diag_suppress=3089)
+                else ()
+                    target_compile_options ("${lib_name}" PRIVATE
+                                      -Xcudafe=--display_error_number -Xcudafe=--diag_suppress=20044)
+                endif ()
+
+                # CUDA integration in Visual Studio seems broken as even if "Use
+                # Host Preprocessor Definitions" is checked, the host preprocessor
+                # definitions are still not used when compiling device code.
+                # To work around that, define the macros using --define-macro to
+                # avoid CMake identifying those as macros and using the proper (but
+                # broken) way of specifying them.
+                if (${CMAKE_GENERATOR} MATCHES "^Visual Studio")
+                    # As PBRT_DEBUG_BUILD is specified globally as a definition, we need to
+                    # manually add it due to the bug mentioned earlier and due to it
+                    # not being found in PBRT_DEFINITIONS.
+                    if (CMAKE_BUILD_TYPE MATCHES Debug)
+                        set (cuda_definitions "--define-macro=PBRT_DEBUG_BUILD")
+                    endif ()
+                    foreach (arg ${PBRT_DEFINITIONS})
+                        list (APPEND cuda_definitions "--define-macro=${arg}")
+                    endforeach ()
+                    target_compile_options ("${lib_name}" PRIVATE ${cuda_definitions})
+                else ()
+                    target_compile_definitions ("${lib_name}" PRIVATE ${PBRT_DEFINITIONS})
+                endif ()
+                target_include_directories ("${lib_name}" PRIVATE src ${CMAKE_BINARY_DIR})
+                target_include_directories ("${lib_name}" SYSTEM PRIVATE ${NANOVDB_INCLUDE})
+                target_link_libraries ("${lib_name}" PRIVATE cuda_build_configuration pbrt_opt pbrt_warnings)
+                add_dependencies ("${lib_name}" pbrt_soa_generated)
+                set (c_var_name ${output_var})
+                set (embedded_file ${cuda_file}.ptx_embedded.c)
+                add_custom_command (
             OUTPUT "${embedded_file}"
             COMMAND ${CMAKE_COMMAND}
               "-DBIN_TO_C_COMMAND=${BIN2C}"
@@ -361,10 +361,10 @@ of CUDA installed, please update your PATH.")
             DEPENDS "${lib_name}" $<TARGET_OBJECTS:${lib_name}>
             COMMENT "Embedding PTX generated from ${cuda_file}"
           )
-          set (${output_var} ${embedded_file})
-        endmacro ()
-    endif ()
-  endif()
+                set (${output_var} ${embedded_file})
+            endmacro ()
+        endif ()
+    endif()
 else ()
     message (STATUS "CUDA not found")
 endif ()
@@ -381,30 +381,30 @@ if (COMPILER_SUPPORTS_MARCH_NATIVE AND PBRT_BUILD_NATIVE_EXECUTABLE)
 endif ()
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
-  list (APPEND PBRT_CXX_FLAGS "-std=c++17")
+    list (APPEND PBRT_CXX_FLAGS "-std=c++17")
 
-  find_program (XIAR xiar)
-  if (XIAR)
-    set (CMAKE_AR "${XIAR}")
-  endif (XIAR)
-  mark_as_advanced (XIAR)
+    find_program (XIAR xiar)
+    if (XIAR)
+        set (CMAKE_AR "${XIAR}")
+    endif (XIAR)
+    mark_as_advanced (XIAR)
 
-  find_program(XILD xild)
-  if (XILD)
-    set (CMAKE_LINKER "${XILD}")
-  endif (XILD)
-  mark_as_advanced (XILD)
+    find_program(XILD xild)
+    if (XILD)
+        set (CMAKE_LINKER "${XILD}")
+    endif (XILD)
+    mark_as_advanced (XILD)
 
-  # ICC will default to -fp-model fast=1, which performs value-unsafe optimizations which will
-  # cause pbrt_test to fail. For safety, -fp-model precise is explicitly set here by default.
-  set (FP_MODEL "precise" CACHE STRING "The floating point model to compile with.")
-  set_property (CACHE FP_MODEL PROPERTY STRINGS "precise" "fast=1" "fast=2")
+    # ICC will default to -fp-model fast=1, which performs value-unsafe optimizations which will
+    # cause pbrt_test to fail. For safety, -fp-model precise is explicitly set here by default.
+    set (FP_MODEL "precise" CACHE STRING "The floating point model to compile with.")
+    set_property (CACHE FP_MODEL PROPERTY STRINGS "precise" "fast=1" "fast=2")
 
-  list (APPEND PBRT_CXX_FLAGS "-fp-model" "${FP_MODEL}")
+    list (APPEND PBRT_CXX_FLAGS "-fp-model" "${FP_MODEL}")
 endif ()
 
 if (MSVC AND MSVC_VERSION LESS 1920)
-  message (SEND_ERROR "pbrt-v4 currently requires MSVC 2019 to build on Windows. PRs that get MSVC 2017 working as well would be welcomed. :-)")
+    message (SEND_ERROR "pbrt-v4 currently requires MSVC 2019 to build on Windows. PRs that get MSVC 2017 working as well would be welcomed. :-)")
 endif ()
 
 ###########################################################################
@@ -424,12 +424,12 @@ int main() {
    fstat(fd, &s);
    size_t len = s.st_size;
    void *ptr = mmap(0, len, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-   munmap(ptr, len);   
+   munmap(ptr, len);
 }
 " HAVE_MMAP)
 
 if (HAVE_MMAP)
-  list (APPEND PBRT_DEFINITIONS "PBRT_HAVE_MMAP")
+    list (APPEND PBRT_DEFINITIONS "PBRT_HAVE_MMAP")
 ENDIF ()
 
 include (CheckIncludeFiles)
@@ -443,7 +443,7 @@ int main() {
 } " HAS_INTRIN_H)
 
 if (HAS_INTRIN_H)
-  list (APPEND PBRT_DEFINITIONS "PBRT_HAS_INTRIN_H")
+    list (APPEND PBRT_DEFINITIONS "PBRT_HAS_INTRIN_H")
 endif ()
 
 ########################################
@@ -460,11 +460,11 @@ int main() { }"
 HAVE_ATTRIBUTE_NOINLINE)
 
 if (HAVE_ATTRIBUTE_NOINLINE)
-  list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE=__attribute__((noinline))")
+    list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE=__attribute__((noinline))")
 elseif (HAVE_DECLSPEC_NOINLINE)
-  list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE=__declspec(noinline)")
+    list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE=__declspec(noinline)")
 else ()
-  list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE")
+    list (APPEND PBRT_DEFINITIONS "PBRT_NOINLINE")
 endif ()
 
 ########################################
@@ -481,11 +481,11 @@ int main() { }"
 HAVE_PRE_BAR_RESTRICT)
 
 if (HAVE_PRE_POST_BAR_RESTRICT)
-  list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT=__restrict__")
+    list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT=__restrict__")
 elseif (HAVE_PRE_BAR_RESTRICT)
-  list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT=__restrict")
+    list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT=__restrict")
 else ()
-  list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT")
+    list (APPEND PBRT_DEFINITIONS "PBRT_RESTRICT")
 endif ()
 
 ########################################
@@ -504,11 +504,11 @@ int main() {
 } " HAVE_POSIX_MEMALIGN )
 
 if (HAVE__ALIGNED_MALLOC)
-  list (APPEND PBRT_DEFINITIONS "PBRT_HAVE__ALIGNED_MALLOC")
+    list (APPEND PBRT_DEFINITIONS "PBRT_HAVE__ALIGNED_MALLOC")
 elseif (HAVE_POSIX_MEMALIGN)
-  list (APPEND PBRT_DEFINITIONS "PBRT_HAVE_POSIX_MEMALIGN")
+    list (APPEND PBRT_DEFINITIONS "PBRT_HAVE_POSIX_MEMALIGN")
 else ()
-  message (SEND_ERROR "Unable to find a way to allocate aligned memory")
+    message (SEND_ERROR "Unable to find a way to allocate aligned memory")
 endif ()
 
 ########################################
@@ -522,11 +522,11 @@ int main() { }
 " INT64_IS_OWN_TYPE)
 
 if (INT64_IS_OWN_TYPE)
-  list (APPEND PBRT_DEFINITIONS "PBRT_INT64_IS_OWN_TYPE")
+    list (APPEND PBRT_DEFINITIONS "PBRT_INT64_IS_OWN_TYPE")
 endif ()
 
 if (PBRT_NVTX)
-  add_definitions (-D NVTX)
+    add_definitions (-D NVTX)
 endif()
 
 ###########################################################################
@@ -556,7 +556,7 @@ set (PBRT_SOURCE
 
   src/pbrt/cmd/pspec_gpu.cpp
   )
-  
+
 if (MSVC)
     set (PBRT_SOURCE ${PBRT_SOURCE} src/pbrt/visualstudio.natvis)
 endif ()
@@ -583,7 +583,7 @@ set (PBRT_SOURCE_HEADERS
   src/pbrt/scene.h
   src/pbrt/shapes.h
   src/pbrt/textures.h
-  )  
+  )
 
 SET (PBRT_CPU_SOURCE
   src/pbrt/cpu/aggregates.cpp
@@ -704,13 +704,13 @@ SET (PBRT_UTIL_SOURCE_HEADERS
   )
 
 if (PBRT_CUDA_ENABLED)
-  set (PBRT_GPU_SOURCE
+    set (PBRT_GPU_SOURCE
     src/pbrt/gpu/optix/aggregate.cpp
     src/pbrt/gpu/optix/denoiser.cpp
     src/pbrt/gpu/memory.cpp
     src/pbrt/gpu/util.cpp
   )
-  set (PBRT_GPU_SOURCE_HEADERS
+    set (PBRT_GPU_SOURCE_HEADERS
     src/pbrt/gpu/optix/aggregate.h
     src/pbrt/gpu/cudagl.h
     src/pbrt/gpu/optix/denoiser.h
@@ -719,7 +719,7 @@ if (PBRT_CUDA_ENABLED)
     src/pbrt/gpu/util.h
   )
 
-  set_source_files_properties (
+    set_source_files_properties (
    src/pbrt/bsdf.cpp
    src/pbrt/bssrdf.cpp
    src/pbrt/bxdfs.cpp
@@ -781,7 +781,7 @@ if (PBRT_CUDA_ENABLED)
     PROPERTIES LANGUAGE CUDA
   )
 
-  cuda_compile_and_embed (PBRT_EMBEDDED_PTX src/pbrt/gpu/optix/optix.cu optix.cu)
+    cuda_compile_and_embed (PBRT_EMBEDDED_PTX src/pbrt/gpu/optix/optix.cu optix.cu)
 endif ()
 
 source_group ("Source Files" FILES ${PBRT_SOURCE})
@@ -793,8 +793,8 @@ source_group ("Header Files/util" FILES ${PBRT_UTIL_SOURCE_HEADERS})
 source_group ("Source Files/wavefront" FILES ${PBRT_WAVEFRONT_SOURCE})
 source_group ("Header Files/wavefront" FILES ${PBRT_WAVEFRONT_SOURCE_HEADERS})
 if (PBRT_CUDA_ENABLED)
-  source_group ("Source Files/gpu" FILES ${PBRT_GPU_SOURCE})
-  source_group ("Header Files/gpu" FILES ${PBRT_GPU_SOURCE_HEADERS})
+    source_group ("Source Files/gpu" FILES ${PBRT_GPU_SOURCE})
+    source_group ("Header Files/gpu" FILES ${PBRT_GPU_SOURCE_HEADERS})
 endif ()
 
 ###########################################################################
@@ -890,8 +890,8 @@ target_link_libraries (pbrt_lib PRIVATE OpenEXR::OpenEXR pbrt_warnings pbrt_opt 
 add_sanitizers (pbrt_lib)
 
 if (WIN32)
-  # Avoid a name clash when building on Visual Studio
-  set_target_properties (pbrt_lib PROPERTIES OUTPUT_NAME libpbrt)
+    # Avoid a name clash when building on Visual Studio
+    set_target_properties (pbrt_lib PROPERTIES OUTPUT_NAME libpbrt)
 endif()
 
 set (ALL_PBRT_LIBS
@@ -909,23 +909,23 @@ set (ALL_PBRT_LIBS
   OpenGL::GL)
 
 if (PBRT_CUDA_ENABLED)
-  set_property (TARGET pbrt_lib PROPERTY CUDA_SEPARABLE_COMPILATION ON)
-  add_library (pbrt_embedded_ptx_lib STATIC
+    set_property (TARGET pbrt_lib PROPERTY CUDA_SEPARABLE_COMPILATION ON)
+    add_library (pbrt_embedded_ptx_lib STATIC
       ${PBRT_EMBEDDED_PTX}
       )
-  add_dependencies (pbrt_embedded_ptx_lib pbrt_soa_generated)
-  list (APPEND ALL_PBRT_LIBS pbrt_embedded_ptx_lib)
-  if (PBRT_NVML)
-    list (APPEND ALL_PBRT_LIBS "nvidia-ml")
-  endif ()
+    add_dependencies (pbrt_embedded_ptx_lib pbrt_soa_generated)
+    list (APPEND ALL_PBRT_LIBS pbrt_embedded_ptx_lib)
+    if (PBRT_NVML)
+        list (APPEND ALL_PBRT_LIBS "nvidia-ml")
+    endif ()
 endif ()
 
 if (WIN32)
-  list (APPEND ALL_PBRT_LIBS "dbghelp" "wsock32" "ws2_32")
+    list (APPEND ALL_PBRT_LIBS "dbghelp" "wsock32" "ws2_32")
 endif ()
 
 if (PROFILE_LIB)
-  list (APPEND ALL_PBRT_LIBS "${PROFILE_LIB}")
+    list (APPEND ALL_PBRT_LIBS "${PROFILE_LIB}")
 endif ()
 
 ######################
@@ -939,19 +939,19 @@ target_compile_options (rgb2spec_opt PUBLIC ${PBRT_CXX_FLAGS})
 target_link_libraries (rgb2spec_opt PRIVATE ${CMAKE_THREAD_LIBS_INIT} pbrt_opt pbrt_warnings)
 
 if (NOT PBRT_USE_PREGENERATED_RGB_TO_SPECTRUM_TABLES)
-  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_aces.cpp
-      COMMAND rgb2spec_opt 64 ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_aces.cpp ACES2065_1 
+    add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_aces.cpp
+      COMMAND rgb2spec_opt 64 ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_aces.cpp ACES2065_1
       DEPENDS rgb2spec_opt)
 
-  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_dci_p3.cpp
+    add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_dci_p3.cpp
       COMMAND rgb2spec_opt 64 ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_dci_p3.cpp DCI_P3
       DEPENDS rgb2spec_opt)
 
-  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_rec2020.cpp
+    add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_rec2020.cpp
       COMMAND rgb2spec_opt 64 ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_rec2020.cpp REC2020
       DEPENDS rgb2spec_opt)
 
-  add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_srgb.cpp
+    add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_srgb.cpp
       COMMAND rgb2spec_opt 64 ${CMAKE_CURRENT_BINARY_DIR}/rgbspectrum_srgb.cpp sRGB
       DEPENDS rgb2spec_opt)
 endif ()
@@ -1044,7 +1044,7 @@ set_property (TARGET nanovdb2pbrt PROPERTY FOLDER "cmd")
 
 # Only do this if both targets actually exist
 if (TARGET Ptex_static AND TARGET zlibstatic)
-  install(
+    install(
     TARGETS zlibstatic
     EXPORT Ptex             # Same export set name as used by Ptex
     RUNTIME DESTINATION bin
@@ -1065,6 +1065,19 @@ target_link_libraries (cyhair2pbrt PRIVATE pbrt_opt pbrt_warnings)
 add_sanitizers (cyhair2pbrt)
 
 set_property (TARGET cyhair2pbrt PROPERTY FOLDER "cmd")
+
+######################
+# pointcloud2pbrt
+
+add_executable(pointcloud2pbrt src/pbrt/cmd/pointcloud2pbrt.cpp)
+
+target_compile_definitions(pointcloud2pbrt PRIVATE ${PBRT_DEFINITIONS})
+target_compile_options(pointcloud2pbrt PRIVATE ${PBRT_CXX_FLAGS})
+target_link_libraries(pointcloud2pbrt PRIVATE pbrt_opt pbrt_warnings)
+
+add_sanitizers(pointcloud2pbrt)
+
+set_property(TARGET pointcloud2pbrt PROPERTY FOLDER "cmd")
 
 ##################
 # Unit tests
